@@ -345,6 +345,7 @@
     <ClInclude Include="TableOutput.h" />
     <ClInclude Include="VTSupport.h" />
     <ClInclude Include="PackageCollection.h" />
+    <ClInclude Include="JsonOutput.h" />
     <ClInclude Include="Workflows\ArchiveFlow.h" />
     <ClInclude Include="Workflows\CompletionFlow.h" />
     <ClInclude Include="Workflows\DependencyNodeProcessor.h" />
@@ -407,6 +408,7 @@
     <ClCompile Include="Workflows\ConfigurationFlow.cpp" />
     <ClCompile Include="Workflows\DependenciesFlow.cpp" />
     <ClCompile Include="PackageCollection.cpp" />
+    <ClCompile Include="JsonOutput.cpp" />
     <ClCompile Include="Argument.cpp" />
     <ClCompile Include="ChannelStreams.cpp" />
     <ClCompile Include="Command.cpp" />

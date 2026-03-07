@@ -8,6 +8,7 @@
 #include "ShowFlow.h"
 #include "Sixel.h"
 #include "TableOutput.h"
+#include "JsonOutput.h"
 #include <winget/FileCache.h>
 #include <winget/ExperimentalFeature.h>
 #include <winget/ManifestYamlParser.h>
@@ -934,6 +935,13 @@ namespace AppInstaller::CLI::Workflow
 
     void ReportSearchResult(Execution::Context& context)
     {
+        // Check if JSON output is requested
+        if (Execution::IsJsonOutputType(context))
+        {
+            ReportSearchResultJson(context);
+            return;
+        }
+
         auto& searchResult = context.Get<Execution::Data::SearchResult>();
 
         bool sourceIsComposite = context.Get<Execution::Data::Source>().IsComposite();
@@ -1086,6 +1094,13 @@ namespace AppInstaller::CLI::Workflow
 
     void ReportListResult::operator()(Execution::Context& context) const
     {
+        // Check if JSON output is requested
+        if (Execution::IsJsonOutputType(context))
+        {
+            ReportListResultJson(context, m_onlyShowUpgrades);
+            return;
+        }
+
         auto& searchResult = context.Get<Execution::Data::SearchResult>();
 
         std::vector<InstalledPackagesTableLine> lines;

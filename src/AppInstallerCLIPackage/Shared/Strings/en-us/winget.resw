@@ -837,6 +837,12 @@ They can be configured through the settings file 'winget settings'.</value>
   <data name="OutputFileArgumentDescription" xml:space="preserve">
     <value>File where the result is to be written</value>
   </data>
+  <data name="OutputTypeArgumentDescription" xml:space="preserve">
+    <value>Format of the output (json, table)</value>
+  </data>
+  <data name="OutputTypeInvalidError" xml:space="preserve">
+    <value>Invalid output type specified. Supported values: json, table</value>
+  </data>
   <data name="ImportFileArgumentDescription" xml:space="preserve">
     <value>File describing the packages to install</value>
   </data>

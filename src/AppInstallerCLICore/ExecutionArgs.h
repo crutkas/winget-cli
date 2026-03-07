@@ -192,6 +192,9 @@ namespace AppInstaller::CLI::Execution
             // Used for demonstration purposes
             ExperimentalArg,
 
+            // Output format
+            OutputType, // Output format for query commands (e.g., json)
+
             // This should always be at the end
             Max
         };

@@ -32,6 +32,7 @@ namespace AppInstaller::CLI
             Argument{ Execution::Args::Type::IncludeUnknown, Resource::String::IncludeUnknownInListArgumentDescription, ArgumentType::Flag },
             Argument{ Execution::Args::Type::IncludePinned, Resource::String::IncludePinnedInListArgumentDescription, ArgumentType::Flag},
             Argument::ForType(Execution::Args::Type::ListDetails),
+            Argument::ForType(Execution::Args::Type::OutputType),
         };
     }
 

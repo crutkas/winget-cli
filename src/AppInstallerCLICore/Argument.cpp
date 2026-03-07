@@ -329,6 +329,10 @@ namespace AppInstaller::CLI
         case Execution::Args::Type::ExperimentalArg:
                 return { type, "arg"_liv };
 
+        // Output format
+        case Execution::Args::Type::OutputType:
+            return { type, "output-type"_liv };
+
         default:
             THROW_HR(E_UNEXPECTED);
         }
@@ -494,6 +498,8 @@ namespace AppInstaller::CLI
             return Argument{ type, Resource::String::CorrelationArgumentDescription, ArgumentType::Standard, Argument::Visibility::Hidden };
         case Args::Type::ListDetails:
             return Argument{ type, Resource::String::ListDetailsArgumentDescription, ArgumentType::Flag, Argument::Visibility::Help };
+        case Args::Type::OutputType:
+            return Argument{ type, Resource::String::OutputTypeArgumentDescription, ArgumentType::Standard, Argument::Visibility::Help };
         default:
             THROW_HR(E_UNEXPECTED);
         }

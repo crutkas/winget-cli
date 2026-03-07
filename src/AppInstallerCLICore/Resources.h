@@ -512,6 +512,8 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(OSVersionDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(OutputDirectoryArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(OutputFileArgumentDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(OutputTypeArgumentDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(OutputTypeInvalidError);
         WINGET_DEFINE_RESOURCE_STRINGID(OverrideArgumentDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(OverwritingExistingFileAtMessage);
         WINGET_DEFINE_RESOURCE_STRINGID(Package);

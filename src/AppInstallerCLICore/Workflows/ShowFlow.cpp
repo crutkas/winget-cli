@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "ShowFlow.h"
+#include "JsonOutput.h"
 #include <winget/ManifestComparator.h>
 #include "TableOutput.h"
 
@@ -84,6 +85,13 @@ namespace AppInstaller::CLI::Workflow
 
     void ShowManifestInfo(Execution::Context& context)
     {
+        // Check if JSON output is requested
+        if (Execution::IsJsonOutputType(context))
+        {
+            ReportManifestInfoJson(context);
+            return;
+        }
+
         context << ShowPackageInfo << ShowInstallerInfo;
     }
 
