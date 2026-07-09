@@ -32,9 +32,9 @@ BeforeAll {
 
 Describe 'List available DSC resources'{
     It 'Shows DSC Resources'{
-        $expectedDSCResources = "WinGetAdminSettings", "WinGetPackage", "WinGetPackageManager", "WinGetSource", "WinGetUserSettings"
+        $expectedDSCResources = "WinGetAdminSettings", "WinGetPackage", "WinGetPackageManager", "WinGetPackageSet", "WinGetSource", "WinGetUserSettings"
         $availableDSCResources = (Get-DscResource -Module Microsoft.WinGet.DSC).Name
-        $availableDSCResources.length | Should -Be 5
+        $availableDSCResources.length | Should -Be 6
         $availableDSCResources | Where-Object {$expectedDSCResources -notcontains $_} | Should -BeNullOrEmpty -ErrorAction Stop
     }
 }
@@ -225,6 +225,76 @@ Describe 'WinGetPackage' {
 
     AfterAll {
         InvokeWinGetDSC -Name WinGetPackage -Method Set -Property @{ Ensure = 'Absent'; Id = $testPackageId}
+    }
+}
+
+Describe 'WinGetPackageSet' {
+    BeforeAll {
+        $testSourceName = 'TestSource'
+        $testSourceArg = 'https://localhost:5001/TestKit/'
+        $testSourceType = 'Microsoft.PreIndexed.Package'
+
+        # Two distinct packages so the set exercises applying shared defaults across multiple items.
+        $testPackageId = 'AppInstallerTest.TestExeInstaller'
+        $testPackageId2 = 'AppInstallerTest.TestMsiInstaller'
+
+        InvokeWinGetDSC -Name WinGetSource -Method Set -Property @{ Name = $testSourceName; Argument = $testSourceArg; Type = $testSourceType; TrustLevel = 'Trusted'; Explicit = $false }
+
+        # A set that installs both packages, declaring the shared Source/UseLatest/InstallMode once.
+        $setProperty = @{
+            SetName = 'TestSet'
+            Source = $testSourceName
+            UseLatest = $true
+            Packages = @(
+                @{ Id = $testPackageId }
+                @{ Id = $testPackageId2 }
+            )
+        }
+    }
+
+    # Why: a freshly-declared set with no packages installed must report NotInDesiredState so that
+    # Set is triggered. Guards the aggregate Test() returning $false when any single item is absent.
+    It 'Test WinGetPackageSet reports missing packages' {
+        $result = InvokeWinGetDSC -Name WinGetPackageSet -Method Test -Property $setProperty
+        $result.InDesiredState | Should -Be $false
+    }
+
+    # Why: verifies the core value of the resource — one Set call installs every listed package
+    # while the shared Source/UseLatest defaults flow down to each item that omitted them.
+    It 'Set WinGetPackageSet installs all packages' {
+        InvokeWinGetDSC -Name WinGetPackageSet -Method Set -Property $setProperty
+
+        $result = InvokeWinGetDSC -Name WinGetPackageSet -Method Test -Property $setProperty
+        $result.InDesiredState | Should -Be $true
+
+        # Each package must be individually present, proving the set did not stop after the first.
+        (InvokeWinGetDSC -Name WinGetPackage -Method Get -Property @{ Id = $testPackageId }).Ensure | Should -Be 'Present'
+        (InvokeWinGetDSC -Name WinGetPackage -Method Get -Property @{ Id = $testPackageId2 }).Ensure | Should -Be 'Present'
+    }
+
+    # Why: a per-item value must win over the set-level default. Here the item overrides Ensure to
+    # Absent while the set default is Present, so this item alone should be uninstalled and the set
+    # must then report NotInDesiredState against the all-Present desired state.
+    It 'Set WinGetPackageSet honors per-item override' {
+        $overrideProperty = @{
+            SetName = 'TestSet'
+            Source = $testSourceName
+            UseLatest = $true
+            Packages = @(
+                @{ Id = $testPackageId }
+                @{ Id = $testPackageId2; Ensure = 'Absent' }
+            )
+        }
+
+        InvokeWinGetDSC -Name WinGetPackageSet -Method Set -Property $overrideProperty
+
+        (InvokeWinGetDSC -Name WinGetPackage -Method Get -Property @{ Id = $testPackageId }).Ensure | Should -Be 'Present'
+        (InvokeWinGetDSC -Name WinGetPackage -Method Get -Property @{ Id = $testPackageId2 }).Ensure | Should -Be 'Absent'
+    }
+
+    AfterAll {
+        InvokeWinGetDSC -Name WinGetPackage -Method Set -Property @{ Ensure = 'Absent'; Id = $testPackageId }
+        InvokeWinGetDSC -Name WinGetPackage -Method Set -Property @{ Ensure = 'Absent'; Id = $testPackageId2 }
     }
 }
 

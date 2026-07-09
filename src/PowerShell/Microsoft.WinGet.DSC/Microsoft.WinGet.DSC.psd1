@@ -85,6 +85,7 @@
         'WinGetSource'
         'WinGetPackageManager'
         'WinGetPackage'
+        'WinGetPackageSet'
     )
     
     # List of all modules packaged with this module

@@ -677,4 +677,144 @@ class WinGetPackage
     }
 }
 
+# Describes a single package within a WinGetPackageSet. This is not a DSC resource on its own;
+# it is an embedded instance type for the WinGetPackageSet 'Packages' property. Only 'Id' is
+# required per item. Any property left unset (empty string or $null) inherits the corresponding
+# set-level default from WinGetPackageSet, which is what lets a caller list many packages while
+# only typing the shared settings once.
+class WinGetPackageSetItem
+{
+    [DscProperty(Key, Mandatory)]
+    [string]$Id
+
+    [DscProperty()]
+    [string]$Source
+
+    [DscProperty()]
+    [string]$Version
+
+    [DscProperty()]
+    [nullable[bool]]$UseLatest
+
+    [DscProperty()]
+    [nullable[WinGetInstallMode]]$InstallMode
+
+    [DscProperty()]
+    [nullable[WinGetEnsure]]$Ensure
+
+    [DscProperty()]
+    [nullable[WinGetMatchOption]]$MatchOption
+}
+
+# This resource manages a collection of packages in a single unit, applying shared defaults to
+# every entry. It exists to reduce authoring boilerplate: instead of one WinGetPackage resource
+# per application (each repeating Source/UseLatest/InstallMode), a caller declares the shared
+# settings once and lists the packages by Id. Each entry is applied by delegating to the same
+# per-package logic used by WinGetPackage, so install/update/uninstall behavior stays identical.
+[DSCResource()]
+class WinGetPackageSet
+{
+    # Identifies the set. It is the DSC key so multiple sets can coexist in one configuration.
+    [DscProperty(Key)]
+    [string]$SetName
+
+    [DscProperty(Mandatory)]
+    [WinGetPackageSetItem[]]$Packages
+
+    # Set-level defaults. An individual package that leaves the matching property unset inherits
+    # the value declared here.
+    [DscProperty()]
+    [string]$Source
+
+    [DscProperty()]
+    [string]$Version
+
+    [DscProperty()]
+    [bool]$UseLatest = $false
+
+    [DscProperty()]
+    [WinGetInstallMode]$InstallMode = [WinGetInstallMode]::Silent
+
+    [DscProperty()]
+    [WinGetEnsure]$Ensure = [WinGetEnsure]::Present
+
+    [DscProperty()]
+    [WinGetMatchOption]$MatchOption = [WinGetMatchOption]::EqualsCaseInsensitive
+
+    [WinGetPackageSet] Get()
+    {
+        $result = [WinGetPackageSet]::new()
+        $result.SetName = $this.SetName
+        $result.Source = $this.Source
+        $result.Version = $this.Version
+        $result.UseLatest = $this.UseLatest
+        $result.InstallMode = $this.InstallMode
+        $result.Ensure = $this.Ensure
+        $result.MatchOption = $this.MatchOption
+
+        $currentItems = [List[WinGetPackageSetItem]]::new()
+        foreach ($item in $this.Packages)
+        {
+            $package = $this.BuildPackage($item)
+            $current = $package.Get()
+
+            $currentItem = [WinGetPackageSetItem]::new()
+            $currentItem.Id = $item.Id
+            $currentItem.Source = $current.Source
+            $currentItem.Version = $current.Version
+            $currentItem.UseLatest = $current.UseLatest
+            $currentItem.InstallMode = $package.InstallMode
+            $currentItem.Ensure = $current.Ensure
+            $currentItem.MatchOption = $package.MatchOption
+
+            $currentItems.Add($currentItem)
+        }
+
+        $result.Packages = $currentItems.ToArray()
+        return $result
+    }
+
+    [bool] Test()
+    {
+        foreach ($item in $this.Packages)
+        {
+            if (-not $this.BuildPackage($item).Test())
+            {
+                return $false
+            }
+        }
+
+        return $true
+    }
+
+    [void] Set()
+    {
+        foreach ($item in $this.Packages)
+        {
+            $this.BuildPackage($item).Set()
+        }
+    }
+
+    # Resolves a single set item against the set-level defaults and returns a fully configured
+    # WinGetPackage. Item-level values win when present; otherwise the set default is used.
+    [WinGetPackage] hidden BuildPackage([WinGetPackageSetItem]$item)
+    {
+        if ([string]::IsNullOrWhiteSpace($item.Id))
+        {
+            throw "A value must be provided for WinGetPackageSetItem::Id"
+        }
+
+        $package = [WinGetPackage]::new()
+        $package.Id = $item.Id
+        $package.Source = if (-not [string]::IsNullOrWhiteSpace($item.Source)) { $item.Source } else { $this.Source }
+        $package.Version = if (-not [string]::IsNullOrWhiteSpace($item.Version)) { $item.Version } else { $this.Version }
+        $package.UseLatest = if ($null -ne $item.UseLatest) { $item.UseLatest } else { $this.UseLatest }
+        $package.InstallMode = if ($null -ne $item.InstallMode) { $item.InstallMode } else { $this.InstallMode }
+        $package.Ensure = if ($null -ne $item.Ensure) { $item.Ensure } else { $this.Ensure }
+        $package.MatchOption = if ($null -ne $item.MatchOption) { $item.MatchOption } else { $this.MatchOption }
+
+        return $package
+    }
+}
+
 #endregion DscResources
