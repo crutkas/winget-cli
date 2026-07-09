@@ -284,6 +284,12 @@
     <ClInclude Include="Commands\DscPackageResource.h">
       <Filter>Commands\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="Commands\DscPackageResourceData.h">
+      <Filter>Commands\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands\DscPackagesResource.h">
+      <Filter>Commands\Configuration</Filter>
+    </ClInclude>
     <ClInclude Include="Commands\DscSourceResource.h">
       <Filter>Commands\Configuration</Filter>
     </ClInclude>
@@ -548,6 +554,12 @@
       <Filter>Commands\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="Commands\DscPackageResource.cpp">
+      <Filter>Commands\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands\DscPackageResourceData.cpp">
+      <Filter>Commands\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands\DscPackagesResource.cpp">
       <Filter>Commands\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="Commands\DscSourceResource.cpp">

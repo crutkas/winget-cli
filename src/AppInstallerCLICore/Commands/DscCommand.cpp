@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "DscCommand.h"
 #include "DscPackageResource.h"
+#include "DscPackagesResource.h"
 #include "DscUserSettingsFileResource.h"
 #include "DscSourceResource.h"
 #include "DscAdminSettingsResource.h"
@@ -32,6 +33,7 @@ namespace AppInstaller::CLI
         // These should all derive from DscCommandBase
         return InitializeFromMoveOnly<std::vector<std::unique_ptr<Command>>>({
             std::make_unique<DscPackageResource>(FullName()),
+            std::make_unique<DscPackagesResource>(FullName()),
             std::make_unique<DscSourceResource>(FullName()),
             std::make_unique<DscUserSettingsFileResource>(FullName()),
             std::make_unique<DscAdminSettingsResource>(FullName()),

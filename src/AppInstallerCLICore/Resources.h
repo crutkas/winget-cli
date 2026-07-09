@@ -219,6 +219,8 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(DscAdminSettingsResourceLongDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(DscPackageResourceShortDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(DscPackageResourceLongDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(DscPackagesResourceShortDescription);
+        WINGET_DEFINE_RESOURCE_STRINGID(DscPackagesResourceLongDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourceFunctionDescriptionGet);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourceFunctionDescriptionSet);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourceFunctionDescriptionWhatIf);
@@ -241,6 +243,7 @@ namespace AppInstaller::CLI::Resource
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourcePropertyDescriptionPackageMatchOption);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourcePropertyDescriptionPackageUseLatest);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourcePropertyDescriptionPackageInstallMode);
+        WINGET_DEFINE_RESOURCE_STRINGID(DscResourcePropertyDescriptionPackages);
         WINGET_DEFINE_RESOURCE_STRINGID(DscUserSettingsFileShortDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(DscUserSettingsFileLongDescription);
         WINGET_DEFINE_RESOURCE_STRINGID(DscResourcePropertyDescriptionUserSettingsFileSettings);
