@@ -6,6 +6,7 @@
 #include "DscComposableObject.h"
 #include "Resources.h"
 #include "Workflows/WorkflowBase.h"
+#include "Workflows/ConfigurationFlow.h"
 
 using namespace AppInstaller::Utility::literals;
 using namespace AppInstaller::Repository;
